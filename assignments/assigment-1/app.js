@@ -22,7 +22,19 @@ const app = (req, res) => {
     return res.end();
   }
 
-  // create reponse for /create-user
+  if (url === '/create-user' && method === 'POST') {
+    const body = [];
+    req.on('data', (chunk) => {
+      body.push(chunk);
+    });
+    req.on('end', () => {
+      const parsedBody = Buffer.concat(body).toString(); // username=whatever-the-user-entered
+      console.log(parsedBody.split('=')[1]);
+    });
+    res.statusCode = 302;
+    res.setHeader('Location', '/');
+    return res.end();
+  }
 
   if (url === '/users') {
     res.setHeader('Content-Type', 'text/html');
@@ -34,14 +46,28 @@ const app = (req, res) => {
     res.write('<main>');
     res.write('<h1>User list</h1>');
     res.write('<ul>');
-    res.write('<li>Pedro Pascal</li>');
-    res.write('<li>Lucas Spadafora</li>');
+    res.write('<li>User 1</li>');
+    res.write('<li>User 2</li>');
     res.write('</ul>');
     res.write('</main>');
     res.write('</body>');
     res.write('</html>');
     return res.end();
   }
+
+  res.setHeader('Content-Type', 'text/html');
+  res.statusCode = 404;
+  res.write('<html lang="en">');
+  res.write('<head>');
+  res.write('<title>404 Not Found</title>');
+  res.write('</head>');
+  res.write('<body>');
+  res.write('<main>');
+  res.write('<h1>404 Not Found</h1>');
+  res.write('</main>');
+  res.write('</body>');
+  res.write('</html>');
+  res.end();
 };
 
 module.exports = app;
